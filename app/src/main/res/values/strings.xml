@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AR扫一扫</string>
+    <string name="path_data_base">/GeoBookRes/</string>
+</resources>
