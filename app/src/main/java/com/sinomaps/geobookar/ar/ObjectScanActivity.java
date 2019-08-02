@@ -1,6 +1,12 @@
 package com.sinomaps.geobookar.ar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -13,11 +19,14 @@ import android.graphics.PointF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
+import android.os.Messenger;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -205,14 +214,10 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
 
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
-        Runtime rt=Runtime.getRuntime();
-        long maxMemory=rt.maxMemory();
-        String sss=("maxMemory:"+Long.toString(maxMemory/(1024*1024)));
-
         super.onCreate(savedInstanceState);
         SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor= sharedPreferences.edit();
-        editor.putString("CurBookID","GeoBookRes71");
+        editor.putString("CurBookID","0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
         editor.commit();
         this.pointer1 = new PointF();
         this.pointer2 = new PointF();
@@ -282,6 +287,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
             xmlParser.setInput(fileInputStream, "UTF-8");
             for (int eventType = xmlParser.getEventType(); eventType != 1; eventType = xmlParser.next()) {
                 if (eventType == 2 && xmlParser.getName().equals("model")) {
+                    String resid=xmlParser.getAttributeValue(null, "resid");
                     String name = xmlParser.getAttributeValue(null, "name");
                     String src = xmlParser.getAttributeValue(null, "src");
                     String strXAngle = xmlParser.getAttributeValue(null, "xAngle");
@@ -430,7 +436,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         } catch (SampleApplicationException e) {
             Log.e(TAG, e.getString());
         }
-        System.gc();
+        destroyCommunicateResource();
     }
 
     public boolean doInitTrackers() {
@@ -592,14 +598,14 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         objectOverlayView.setThumbImg(null);
         if (object != null) {
             objectOverlayView.setTitle(object.Name);
-            String thumbPath = MyUtility.getProjectBathPath(this) + "basic/thumb/" + object.f93ID + ".jpg";
+            String thumbPath = MyUtility.getProjectBathPath(this) + "basic/thumb/" + object.ID + ".jpg";
             if (new File(thumbPath).exists()) {
                 objectOverlayView.setThumbImg(BitmapFactory.decodeFile(thumbPath));
             }
         } else {
             objectOverlayView.setTitle(name);
         }
-        objectOverlayView.setLayoutParams(new LayoutParams(-2, -2));
+        objectOverlayView.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         objectOverlayView.measure(MeasureSpec.makeMeasureSpec(mTextureSize, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(mTextureSize, MeasureSpec.AT_MOST));
         objectOverlayView.layout(0, 0, objectOverlayView.getMeasuredWidth(), objectOverlayView.getMeasuredHeight());
         Bitmap bitmap = Bitmap.createBitmap(mTextureSize, mTextureSize, Config.ARGB_8888);
@@ -758,4 +764,94 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         }
         return true;
     }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getKeyCode() != 4 || event.getRepeatCount() != 0) {
+            return super.onKeyDown(keyCode, event);
+        }
+        confirmExit(this);
+        return true;
+    }
+
+    public static void confirmExit(final Activity activity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setMessage(activity.getResources().getString(R.string.yt_string_dialog_exit_msg));
+        builder.setTitle(activity.getResources().getString(R.string.yt_string_dialog_exit_title));
+        builder.setPositiveButton(activity.getResources().getString(R.string.yt_string_dialog_exit_Yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                activity.finish();
+            }
+        });
+        builder.setNegativeButton(activity.getResources().getString(R.string.yt_string_dialog_exit_No), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+//region 与资源模块通信
+    private static final int MSG_GET_RESOUCE_FILE = 0x1100;
+    private static final int MSG_GET_RESOUCE_TYPE = 0x1101;//下载还是未下载
+    private Messenger mService;
+    private boolean isConn;
+    private void bindServiceInvoked()
+    {
+        Intent intent = new Intent();
+        intent.setAction("com.mainbo.ztec.resouce");
+        bindService(intent, mConn, Context.BIND_AUTO_CREATE);
+        Log.e(TAG, "bindService invoked !");
+    }
+
+
+    private void destroyCommunicateResource()
+    {
+//        unbindService(mConn);
+    }
+    private Messenger mMessenger = new Messenger(new Handler()
+    {
+        @Override
+        public void handleMessage(Message msgFromServer)
+        {
+            switch (msgFromServer.what)
+            {
+//                case MSG_SUM:
+//                    break;
+            }
+            super.handleMessage(msgFromServer);
+        }
+    });
+
+
+    private ServiceConnection mConn = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            mService = new Messenger(service);
+            isConn = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            mService = null;
+            isConn = false;
+
+        }
+    };
+
+    private void send2ebook(){
+//        Message msgFromClient = Message.obtain(null, MSG_SUM, a, b);
+//        msgFromClient.replyTo = mMessenger;
+//        if (isConn)
+//        {
+//            //往服务端发送消息
+//            mService.send(msgFromClient);
+//        }
+    }
+
+    //endregion
 }

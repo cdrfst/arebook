@@ -44,7 +44,7 @@ public class MultiObjectActivity extends BaseActivity {
             while (eventType != 1) {
                 String strName = xmlParser.getName();
                 if (eventType == 2) {
-                    if (strName.equals("object") && xmlParser.getAttributeValue(0).equals(obj.f93ID)) {
+                    if (strName.equals("object") && xmlParser.getAttributeValue(0).equals(obj.ID)) {
                         flag = true;
                     }
                     if (flag && strName.equals("subObject")) {

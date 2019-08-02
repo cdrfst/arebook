@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.DisplayMetrics;
+import android.widget.Toast;
 
 import com.sinomaps.geobookar.model.ObjectInfo;
 import com.sinomaps.geobookar.opengl.My3DItem;
@@ -464,10 +465,14 @@ public class ObjectScanRenderer implements Renderer {
                     if (intersection.getData()[0] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0]) && intersection.getData()[0] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0] && intersection.getData()[1] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) && intersection.getData()[1] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) {
                         ObjectInfo object = MyUtility.getObjectFromXML(this.mActivity, (String) this.listTargetNames.get(i));
                         if (object != null) {
-                            if (!this.mActivity.bIsGotoDetailPage) {
+                            if (!this.mActivity.bIsGotoDetailPage&&object.Type.equalsIgnoreCase("models")) {
                                 MyUtility.gotoDetailPage(this.mActivity, object);
                                 this.mActivity.bIsGotoDetailPage = true;
                                 return;
+                            }
+                            else {
+                                Thread.sleep(1000);
+                                Toast.makeText(this.mActivity,"调用播放器",Toast.LENGTH_SHORT);
                             }
                             return;
                         }

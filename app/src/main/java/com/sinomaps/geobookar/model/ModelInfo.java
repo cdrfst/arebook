@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class ModelInfo implements Serializable {
 
     /* renamed from: ID */
-    public String f92ID;
+    public String ID;
     public boolean IsEarth = false;
     public String Name;
     public String Src;

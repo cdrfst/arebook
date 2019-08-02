@@ -112,7 +112,7 @@ public class MyUtility {
                     }
                     if (sectionFlag && strName.equals("object")) {
                         ObjectInfo object = new ObjectInfo();
-                        object.f93ID = xmlParser.getAttributeValue(0);
+                        object.ID = xmlParser.getAttributeValue(0);
                         object.Name = xmlParser.getAttributeValue(1);
                         object.Page = Integer.parseInt(xmlParser.getAttributeValue(2));
                         object.Type = xmlParser.getAttributeValue(3);
@@ -211,11 +211,11 @@ public class MyUtility {
                     eventType = xmlParser.next();
                 } else {
                     ObjectInfo object = new ObjectInfo();
-                    object.f93ID = xmlParser.getAttributeValue(null, "id");
+                    object.ID = xmlParser.getAttributeValue(null, "id");
                     object.Name = xmlParser.getAttributeValue(null, "name");
-                    object.Page = Integer.parseInt(xmlParser.getAttributeValue(null, "page"));
+//                    object.Page = Integer.parseInt(xmlParser.getAttributeValue(null, "page"));
                     object.Type = xmlParser.getAttributeValue(null, "type");
-                    object.Src = xmlParser.getAttributeValue(null, "src");
+//                    object.Src = xmlParser.getAttributeValue(null, "src");
                     if (object.Type.equals("model")) {
                         ModelInfo model = new ModelInfo();
                         model.Name = object.Name;
@@ -293,6 +293,14 @@ public class MyUtility {
     }
 
     public static void gotoDetailPage(Context context, ObjectInfo object) {
+        //region 需要调用播放器的资源类型
+
+        if(object.Type.equalsIgnoreCase("objs")==false&&(object.Type.equals("models") || object.Type.equals("model"))==false){
+            Toast.makeText(context, "调用播放器", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //endregion
+
         Intent intent = new Intent();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Object", object);
@@ -345,6 +353,7 @@ public class MyUtility {
 //            intent.addFlags(SQLiteDatabase.CREATE_IF_NECESSARY);
 //            intent.setDataAndType(Uri.parse("file:///" + getProjectBathPath(context) + object.Src + object.Name + "." + object.Type), "application/pdf");
 //        }
+
         context.startActivity(intent);
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 public class ObjectInfo implements Serializable {
 
     /* renamed from: ID */
-    public String f93ID;
+    public String ID;
     public String Name;
     public int Page;
     public String Src;
