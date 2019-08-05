@@ -1,5 +1,6 @@
 package com.sinomaps.geobookar.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -13,7 +14,7 @@ import com.sinomaps.geobookar.R;
 //import com.umeng.analytics.MobclickAgent;
 
 /* renamed from: com.sinomaps.geobookar.ui.BaseActivity */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
