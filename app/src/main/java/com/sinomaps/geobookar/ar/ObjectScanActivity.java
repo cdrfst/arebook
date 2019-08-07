@@ -53,6 +53,7 @@ import com.sinomaps.geobookar.opengl.My3DObject;
 import com.sinomaps.geobookar.ui.BaseActivity;
 import com.sinomaps.geobookar.ui.LoadingDialogHandler;
 import com.sinomaps.geobookar.utility.MyUtility;
+import com.sinomaps.geobookar.utility.ResourceMgrTool;
 import com.sinomaps.geobookar.vr.SampleApplicationControl;
 import com.sinomaps.geobookar.vr.SampleApplicationException;
 import com.sinomaps.geobookar.vr.SampleApplicationGLView;
@@ -219,8 +220,8 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        String bookId= getIntent().getStringExtra("CurBookID");
-//        ShowDialog("收到的书籍ID",bookId);
+        String bookId= getIntent().getStringExtra("CurBookID");
+        Log.d(TAG,"收到的书籍ID:"+bookId);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("CurBookID", "0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
@@ -262,7 +263,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         this.mdpiScaleIndicator = getApplicationContext().getResources().getDisplayMetrics().density;
         this.mIsDroidDevice = Build.MODEL.toLowerCase().startsWith("droid");
 
-        bindServiceInvoked();
+        ResourceMgrTool.bindServiceInvoked(this);
     }
 
     private View getLeafView(View view) {
@@ -444,7 +445,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         } catch (SampleApplicationException e) {
             Log.e(TAG, e.getString());
         }
-        destroyCommunicateResource();
+        ResourceMgrTool.destroyCommunicateResource(this);
     }
 
     public boolean doInitTrackers() {
@@ -551,7 +552,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
                 this.mPopupTexture = createPopupTexture(targetName);
                 this.lastTargetName = targetName;
                 this.mRenderer.isStatic3DOK = false;
-                send2ebook();
+
                 return;
             }
             this.mRenderer.setFramesToSkipBeforeRenderingTransition(10);
@@ -799,82 +800,4 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         });
         builder.create().show();
     }
-
-    //region 与资源模块通信
-    private static final int MSG_GET_RESOUCE_FILE = 0x1100;
-    private static final int MSG_GET_RESOUCE_TYPE = 0x1101;//下载还是未下载
-    private Messenger mService;
-    private boolean isConn;
-
-    private void bindServiceInvoked() {
-        Intent intent = new Intent();
-        intent.setPackage(getPackageName());
-        intent.setAction("com.mainbo.ztec.resouce");
-        bindService(intent, mConn, Context.BIND_AUTO_CREATE);
-        Log.e(TAG, "bindService invoked !");
-    }
-
-
-    private void destroyCommunicateResource() {
-        unbindService(mConn);
-    }
-
-    private Messenger mMessenger = new Messenger(new Handler() {
-        @Override
-        public void handleMessage(Message msgFromServer) {
-            switch (msgFromServer.what) {
-                case MSG_GET_RESOUCE_FILE:
-                    ShowDialog("收到返回消息",msgFromServer.obj.toString());
-                    break;
-                case MSG_GET_RESOUCE_TYPE:
-                    break;
-            }
-            super.handleMessage(msgFromServer);
-        }
-    });
-
-private void ShowDialog(String title,String msg){
-    new AlertDialog.Builder(ObjectScanActivity.this)
-            .setTitle(title)
-            .setMessage(msg)
-            .show();
-}
-    private ServiceConnection mConn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = new Messenger(service);
-            isConn = true;
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            isConn = false;
-
-        }
-    };
-
-    private void send2ebook() {
-        Message msgFromClient = Message.obtain(null, MSG_GET_RESOUCE_FILE);
-        ArResouceParamBean bean = new ArResouceParamBean();
-        bean.setMethodName(MethodName_Ar.RESOUCE_DIRTORY);
-        HashMap<String, String> map = new HashMap<>();
-        map.put(ResourceParamKeys.CHADAPTERID, "skeufhgiwuehgfui");
-        map.put(ResourceParamKeys.RESOUCEID, "oseighuioerhg");
-        bean.setParam(map);
-        msgFromClient.obj = bean;
-        msgFromClient.replyTo = mMessenger;
-        if (isConn) {
-            //往服务端发送消息
-            try {
-                mService.send(msgFromClient);
-                ShowDialog("提示","消息已发送");
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    //endregion
 }

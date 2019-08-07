@@ -206,16 +206,20 @@ public class MyUtility {
             XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
             xmlParser.setInput(new FileInputStream(categoryConfigFilePath), "UTF-8");
             int eventType = xmlParser.getEventType();
-            while (eventType != 1) {
-                if (eventType != 2 || !xmlParser.getName().equals("object") || !xmlParser.getAttributeValue(null, "id").toLowerCase().equals(id.toLowerCase())) {
+            String chapterId = null;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType != XmlPullParser.START_TAG || !xmlParser.getName().equals("object") || !xmlParser.getAttributeValue(null, "id").toLowerCase().equals(id.toLowerCase())) {
+                    if (xmlParser.getName() != null && xmlParser.getName().equals("chapter")) {
+                        chapterId = xmlParser.getAttributeValue(null, "id");
+                    }
                     eventType = xmlParser.next();
                 } else {
                     ObjectInfo object = new ObjectInfo();
                     object.ID = xmlParser.getAttributeValue(null, "id");
                     object.Name = xmlParser.getAttributeValue(null, "name");
-//                    object.Page = Integer.parseInt(xmlParser.getAttributeValue(null, "page"));
+                    object.ResID = xmlParser.getAttributeValue(null, "resid");
                     object.Type = xmlParser.getAttributeValue(null, "type");
-//                    object.Src = xmlParser.getAttributeValue(null, "src");
+                    object.ChapterID = chapterId;
                     if (object.Type.equals("model")) {
                         ModelInfo model = new ModelInfo();
                         model.Name = object.Name;
@@ -234,33 +238,33 @@ public class MyUtility {
                         }
                         object.AddModel(model);
                     }
-                    if (object.Type.equals("images")) {
-                        while (eventType != 1) {
-                            if (eventType != 2) {
-                                if (eventType == 3 && xmlParser.getName().equals("object")) {
-                                    break;
-                                }
-                            } else {
-                                String strName = xmlParser.getName();
-                                if (strName.equals("text")) {
-                                    object.Text = xmlParser.nextText();
-                                } else if (strName.equals("image")) {
-                                    ImageInfo image = new ImageInfo();
-                                    image.Name = xmlParser.getAttributeValue(null, "name");
-                                    image.Type = xmlParser.getAttributeValue(null, "type");
-                                    image.Src = xmlParser.getAttributeValue(null, "src");
-                                    image.Text = xmlParser.nextText();
-                                    object.AddImage(image);
-                                }
-                            }
-                            eventType = xmlParser.next();
-                        }
-                    }
+//                    if (object.Type.equals("images")) {
+//                        while (eventType != 1) {
+//                            if (eventType != 2) {
+//                                if (eventType == 3 && xmlParser.getName().equals("object")) {
+//                                    break;
+//                                }
+//                            } else {
+//                                String strName = xmlParser.getName();
+//                                if (strName.equals("text")) {
+//                                    object.Text = xmlParser.nextText();
+//                                } else if (strName.equals("image")) {
+//                                    ImageInfo image = new ImageInfo();
+//                                    image.Name = xmlParser.getAttributeValue(null, "name");
+//                                    image.Type = xmlParser.getAttributeValue(null, "type");
+//                                    image.Src = xmlParser.getAttributeValue(null, "src");
+//                                    image.Text = xmlParser.nextText();
+//                                    object.AddImage(image);
+//                                }
+//                            }
+//                            eventType = xmlParser.next();
+//                        }
+//                    }
                     if (!object.Type.equals("models")) {
                         return object;
                     }
-                    while (eventType != 1) {
-                        if (eventType == 2) {
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_TAG) {
                             if (xmlParser.getName().equals("model")) {
                                 ModelInfo model2 = new ModelInfo();
                                 model2.Name = xmlParser.getAttributeValue(null, "name");
@@ -295,7 +299,7 @@ public class MyUtility {
     public static void gotoDetailPage(Context context, ObjectInfo object) {
         //region 需要调用播放器的资源类型
 
-        if(object.Type.equalsIgnoreCase("objs")==false&&(object.Type.equals("models") || object.Type.equals("model"))==false){
+        if (object.Type.equalsIgnoreCase("objs") == false && (object.Type.equals("models") || object.Type.equals("model")) == false) {
             Toast.makeText(context, "调用播放器", Toast.LENGTH_SHORT).show();
             return;
         }

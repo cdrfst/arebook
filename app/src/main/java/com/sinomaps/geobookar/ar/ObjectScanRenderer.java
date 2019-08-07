@@ -1,15 +1,22 @@
 package com.sinomaps.geobookar.ar;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.DisplayMetrics;
 import android.widget.Toast;
 
+import com.sinomaps.geobookar.R;
+import com.sinomaps.geobookar.model.ArResouceResponseBean;
 import com.sinomaps.geobookar.model.ObjectInfo;
+import com.sinomaps.geobookar.model.ResourceStatus;
 import com.sinomaps.geobookar.opengl.My3DItem;
 import com.sinomaps.geobookar.opengl.My3DObject;
 import com.sinomaps.geobookar.utility.MyUtility;
+import com.sinomaps.geobookar.utility.ResourceMgrTool;
 import com.sinomaps.geobookar.vr.CubeShaders2;
 import com.sinomaps.geobookar.vr.LineShaders;
 import com.sinomaps.geobookar.vr.Plane;
@@ -463,18 +470,36 @@ public class ObjectScanRenderer implements Renderer {
                 try {
                     Vec3F intersection = SampleMath.getPointToPlaneIntersection(SampleMath.Matrix44FInverse(this.vuforiaAppSession.getProjectionMatrix()), (Matrix44F) this.listTargetModelViewMatrix.get(i), (float) metrics.widthPixels, (float) metrics.heightPixels, new Vec2F(x, y), new Vec3F(0.0f, 0.0f, 0.0f), new Vec3F(0.0f, 0.0f, 1.0f));
                     if (intersection.getData()[0] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0]) && intersection.getData()[0] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0] && intersection.getData()[1] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) && intersection.getData()[1] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) {
-                        ObjectInfo object = MyUtility.getObjectFromXML(this.mActivity, (String) this.listTargetNames.get(i));
+                        final ObjectInfo object = MyUtility.getObjectFromXML(this.mActivity, (String) this.listTargetNames.get(i));
                         if (object != null) {
-                            if (!this.mActivity.bIsGotoDetailPage&&object.Type.equalsIgnoreCase("models")) {
-                                MyUtility.gotoDetailPage(this.mActivity, object);
-                                this.mActivity.bIsGotoDetailPage = true;
-                                return;
-                            }
-                            else {
-                                Thread.sleep(1000);
-                                Toast.makeText(this.mActivity,"调用播放器",Toast.LENGTH_SHORT);
-                            }
-                            return;
+
+                            ResourceMgrTool.getResourceStatus(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                                @Override
+                                public void resCallback(ResourceStatus status, Object data) {
+                                    if (status.equals(ResourceStatus.RESOUCE_DOWNLOADED)) {
+                                        if (!ObjectScanRenderer.this.mActivity.bIsGotoDetailPage && object.Type.equalsIgnoreCase("models")) {
+                                            MyUtility.gotoDetailPage(ObjectScanRenderer.this.mActivity, object);
+                                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = true;
+                                        } else {
+                                            Toast.makeText(ObjectScanRenderer.this.mActivity, "调用播放器", Toast.LENGTH_SHORT);
+                                            //region 调用打开资源接口
+                                            ResourceMgrTool.playResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                                                @Override
+                                                public void resCallback(ResourceStatus status, Object data) {
+                                                    if (!status.equals(ResourceStatus.RESOUCE_NOT_PAY)) {
+                                                        ShowDialog(ObjectScanRenderer.this.mActivity, "提示", "资源已经打开");
+                                                    } else {
+                                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, object);
+                                                    }
+                                                }
+                                            });
+                                            //endregion
+                                        }
+                                    } else {
+                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, object);
+                                    }
+                                }
+                            });
                         }
                     }
                     i++;
@@ -484,6 +509,98 @@ public class ObjectScanRenderer implements Renderer {
                 }
             }
         }
+    }
+
+    private void ShowDialogWithStatus(final Context context, final ResourceStatus status, final ObjectInfo object) {
+        String title = "提示";
+        String msg = "";
+        DialogInterface.OnClickListener ok = null;
+        DialogInterface.OnClickListener cancel = null;
+        int okBtnTxt = 0;
+        int cancelBtnTxt = 0;
+        switch (status) {
+            case RESOUCE_DOWNLOADED:
+                break;
+            case RESOURCE_DOWNLOADING:
+                msg = "资源下载中请稍后";
+                break;
+            case RESOURCE_NOT_DOWNLOAD:
+                msg = "请先下载资源";
+                okBtnTxt = R.string.ar_string_dialog_download_Yes;
+                cancelBtnTxt = R.string.ar_string_dialog_download_No;
+                cancel = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ShowDialog(context, "提示", "取消下载");
+                        //点击取消按钮处理
+                        dialog.cancel();
+                    }
+                };
+                ok = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ResourceMgrTool.downLoadResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                            @Override
+                            public void resCallback(ResourceStatus status, Object data) {
+                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                                ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
+                            }
+                        });
+
+                        ResourceMgrTool.gotoResourceDownloadWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                            @Override
+                            public void resCallback(ResourceStatus status, Object data) {
+                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                                ShowDialog(context, "请求跳转到资源下载窗口的响应", responseBean.getResourceStatus().toString());
+                            }
+                        });
+                        //点击确定按钮处理
+                        dialog.cancel();
+                    }
+                };
+                break;
+            case RESOUCE_NOT_PAY:
+                msg = "此资源需要付费";
+                okBtnTxt = R.string.ar_string_dialog_pay_Yes;
+                cancelBtnTxt = R.string.ar_string_dialog_pay_No;
+                cancel = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ShowDialog(context, "提示", "点击取消付费按钮");
+                        //点击取消按钮处理
+                        dialog.cancel();
+                    }
+                };
+                ok = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ResourceMgrTool.gotoResourceListWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                            @Override
+                            public void resCallback(ResourceStatus status, Object data) {
+                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                                ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
+                            }
+                        });
+                        //点击确定按钮处理
+                        dialog.cancel();
+                    }
+                };
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+        builder.setMessage(msg);
+        builder.setCancelable(true);
+        builder.setNegativeButton(cancelBtnTxt, cancel);
+        builder.setPositiveButton(okBtnTxt, ok);
+        builder.show();
+    }
+
+    private static void ShowDialog(Context context, String title, String msg) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(msg)
+                .show();
     }
 
     private Buffer fillBuffer(float[] array) {
