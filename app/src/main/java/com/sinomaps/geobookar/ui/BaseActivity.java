@@ -14,7 +14,7 @@ import com.sinomaps.geobookar.R;
 //import com.umeng.analytics.MobclickAgent;
 
 /* renamed from: com.sinomaps.geobookar.ui.BaseActivity */
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

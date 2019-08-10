@@ -467,39 +467,42 @@ public class ObjectScanRenderer implements Renderer {
             this.mActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
             int i = 0;
             while (i < this.listTargetNames.size()) {
+                if (ObjectScanRenderer.this.mActivity.bIsGotoDetailPage) {
+                    return;
+                }
                 try {
                     Vec3F intersection = SampleMath.getPointToPlaneIntersection(SampleMath.Matrix44FInverse(this.vuforiaAppSession.getProjectionMatrix()), (Matrix44F) this.listTargetModelViewMatrix.get(i), (float) metrics.widthPixels, (float) metrics.heightPixels, new Vec2F(x, y), new Vec3F(0.0f, 0.0f, 0.0f), new Vec3F(0.0f, 0.0f, 1.0f));
                     if (intersection.getData()[0] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0]) && intersection.getData()[0] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[0] && intersection.getData()[1] >= (-((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) && intersection.getData()[1] <= ((Vec3F) this.listTargetPositiveDimension.get(i)).getData()[1]) {
                         final ObjectInfo object = MyUtility.getObjectFromXML(this.mActivity, (String) this.listTargetNames.get(i));
                         if (object != null) {
-
+                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = true;
                             ResourceMgrTool.getResourceStatus(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                                 @Override
-                                public void resCallback(ResourceStatus status, Object data) {
-                                    if (status.equals(ResourceStatus.RESOUCE_DOWNLOADED)) {
-                                        if (!ObjectScanRenderer.this.mActivity.bIsGotoDetailPage && object.Type.equalsIgnoreCase("models")) {
+                                public void resCallback(ArResouceResponseBean responseBean) {
+                                    if (responseBean.getResourceStatus().equals(ResourceStatus.RESOUCE_DOWNLOADED)) {
+                                        if (object.Type.equalsIgnoreCase("models")) {
                                             MyUtility.gotoDetailPage(ObjectScanRenderer.this.mActivity, object);
-                                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = true;
                                         } else {
                                             Toast.makeText(ObjectScanRenderer.this.mActivity, "调用播放器", Toast.LENGTH_SHORT);
                                             //region 调用播放资源接口
                                             ResourceMgrTool.playResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                                                 @Override
-                                                public void resCallback(ResourceStatus status, Object data) {
-                                                    if (status.equals(ResourceStatus.RESOUCE_PAID)) {
+                                                public void resCallback(ArResouceResponseBean responseBean) {
+                                                    if (responseBean.getResourceStatus().equals(ResourceStatus.RESOUCE_PAID)) {
                                                         ShowDialog(ObjectScanRenderer.this.mActivity, "提示", "资源已经打开");
                                                     } else {
-                                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, data, object);
+                                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, responseBean, object);
                                                     }
                                                 }
                                             });
                                             //endregion
                                         }
                                     } else {
-                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, data, object);
+                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, responseBean, object);
                                     }
                                 }
                             });
+//                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = false;
                         }
                     }
                     i++;
@@ -511,17 +514,16 @@ public class ObjectScanRenderer implements Renderer {
         }
     }
 
-    private void ShowDialogWithStatus(final Context context, final ResourceStatus status, Object data, final ObjectInfo object) {
+    private void ShowDialogWithStatus(final Context context, final ArResouceResponseBean responseBean, final ObjectInfo object) {
         String title = "提示";
         String msg = "";
         DialogInterface.OnClickListener ok = null;
         DialogInterface.OnClickListener cancel = null;
         int okBtnTxt = 0;
         int cancelBtnTxt = 0;
-        switch (status) {
+        switch (responseBean.getResourceStatus()) {
             case RESOURCE_STATUS_ERROR:
                 title = "错误";
-                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
                 msg = responseBean.getError();
                 break;
             case RESOUCE_DOWNLOADED:
@@ -546,16 +548,14 @@ public class ObjectScanRenderer implements Renderer {
                     public void onClick(DialogInterface dialog, int which) {
                         ResourceMgrTool.downLoadResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
-                            public void resCallback(ResourceStatus status, Object data) {
-                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                            public void resCallback(ArResouceResponseBean responseBean) {
                                 ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
                             }
                         });
 
                         ResourceMgrTool.gotoResourceDownloadWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
-                            public void resCallback(ResourceStatus status, Object data) {
-                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                            public void resCallback(ArResouceResponseBean responseBean) {
                                 ShowDialog(context, "请求跳转到资源下载窗口的响应", responseBean.getResourceStatus().toString());
                             }
                         });
@@ -581,8 +581,7 @@ public class ObjectScanRenderer implements Renderer {
                     public void onClick(DialogInterface dialog, int which) {
                         ResourceMgrTool.gotoResourceListWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
-                            public void resCallback(ResourceStatus status, Object data) {
-                                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                            public void resCallback(ArResouceResponseBean responseBean) {
                                 ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
                             }
                         });
