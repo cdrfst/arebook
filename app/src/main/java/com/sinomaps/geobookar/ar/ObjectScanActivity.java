@@ -222,10 +222,12 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         super.onCreate(savedInstanceState);
         String bookId= getIntent().getStringExtra("CurBookID");
         Log.d(TAG,"收到的书籍ID:"+bookId);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("CurBookID", "0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
-        editor.commit();
+        if(bookId==null){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("CurBookID", "0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
+            editor.commit();
+        }
         this.pointer1 = new PointF();
         this.pointer2 = new PointF();
         this.mid = new PointF();
