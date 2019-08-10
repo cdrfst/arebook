@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.View;
@@ -34,7 +35,8 @@ import java.util.List;
 
 public class MyUtility {
     public static String getDataBathPath(Context context) {
-        return context.getExternalFilesDir(null) + context.getResources().getString(R.string.path_data_base);
+//        return context.getExternalFilesDir(null) + context.getResources().getString(R.string.path_data_base);
+        return  Environment.getExternalStorageDirectory() + context.getResources().getString(R.string.path_data_base);
     }
 
     public static String getCurBookID(Context context) {

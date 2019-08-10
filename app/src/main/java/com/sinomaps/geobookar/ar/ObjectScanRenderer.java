@@ -482,21 +482,21 @@ public class ObjectScanRenderer implements Renderer {
                                             ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = true;
                                         } else {
                                             Toast.makeText(ObjectScanRenderer.this.mActivity, "调用播放器", Toast.LENGTH_SHORT);
-                                            //region 调用打开资源接口
+                                            //region 调用播放资源接口
                                             ResourceMgrTool.playResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                                                 @Override
                                                 public void resCallback(ResourceStatus status, Object data) {
-                                                    if (!status.equals(ResourceStatus.RESOUCE_NOT_PAY)) {
+                                                    if (status.equals(ResourceStatus.RESOUCE_PAID)) {
                                                         ShowDialog(ObjectScanRenderer.this.mActivity, "提示", "资源已经打开");
                                                     } else {
-                                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, object);
+                                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, data, object);
                                                     }
                                                 }
                                             });
                                             //endregion
                                         }
                                     } else {
-                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, object);
+                                        ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, status, data, object);
                                     }
                                 }
                             });
@@ -511,7 +511,7 @@ public class ObjectScanRenderer implements Renderer {
         }
     }
 
-    private void ShowDialogWithStatus(final Context context, final ResourceStatus status, final ObjectInfo object) {
+    private void ShowDialogWithStatus(final Context context, final ResourceStatus status, Object data, final ObjectInfo object) {
         String title = "提示";
         String msg = "";
         DialogInterface.OnClickListener ok = null;
@@ -519,6 +519,11 @@ public class ObjectScanRenderer implements Renderer {
         int okBtnTxt = 0;
         int cancelBtnTxt = 0;
         switch (status) {
+            case RESOURCE_STATUS_ERROR:
+                title = "错误";
+                ArResouceResponseBean responseBean = (ArResouceResponseBean) data;
+                msg = responseBean.getError();
+                break;
             case RESOUCE_DOWNLOADED:
                 break;
             case RESOURCE_DOWNLOADING:
@@ -590,9 +595,11 @@ public class ObjectScanRenderer implements Renderer {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(title);
         builder.setMessage(msg);
-        builder.setCancelable(true);
-        builder.setNegativeButton(cancelBtnTxt, cancel);
-        builder.setPositiveButton(okBtnTxt, ok);
+        if (ok != null && cancel != null) {
+            builder.setCancelable(true);
+            builder.setNegativeButton(cancelBtnTxt, cancel);
+            builder.setPositiveButton(okBtnTxt, ok);
+        }
         builder.show();
     }
 
