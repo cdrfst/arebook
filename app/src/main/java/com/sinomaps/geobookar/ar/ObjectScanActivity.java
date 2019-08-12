@@ -40,6 +40,7 @@ import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -220,9 +221,9 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String bookId= getIntent().getStringExtra("CurBookID");
-        Log.d(TAG,"收到的书籍ID:"+bookId);
-        if(bookId==null){
+        String bookId = getIntent().getStringExtra("CurBookID");
+        Log.d(TAG, "收到的书籍ID:" + bookId);
+        if (bookId == null) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("CurBookID", "0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
@@ -662,14 +663,23 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
+    private Menu title_bar;
+
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_object_scan, menu);
+        title_bar = menu;
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_scan_model_static) {
             this.bIsStatic3DModel = !this.bIsStatic3DModel;
+            item.setVisible(false);
+            title_bar.getItem(1).setVisible(true);
+        } else {
+            this.bIsStatic3DModel = !this.bIsStatic3DModel;
+            item.setVisible(false);
+            title_bar.getItem(0).setVisible(true);
         }
         return super.onOptionsItemSelected(item);
     }
