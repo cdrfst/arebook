@@ -538,7 +538,7 @@ public class ObjectScanRenderer implements Renderer {
                 cancel = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ShowDialog(context, "提示", "取消下载");
+//                        ShowDialog(context, "提示", "取消下载");
                         //点击取消按钮处理
                         dialog.cancel();
                     }
@@ -549,7 +549,7 @@ public class ObjectScanRenderer implements Renderer {
                         ResourceMgrTool.downLoadResource(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
                             public void resCallback(ArResouceResponseBean responseBean) {
-                                ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
+//                                ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
                             }
                         });
 
@@ -571,7 +571,7 @@ public class ObjectScanRenderer implements Renderer {
                 cancel = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ShowDialog(context, "提示", "点击取消付费按钮");
+//                        ShowDialog(context, "提示", "点击取消付费按钮");
                         //点击取消按钮处理
                         dialog.cancel();
                     }
@@ -582,7 +582,7 @@ public class ObjectScanRenderer implements Renderer {
                         ResourceMgrTool.gotoResourceListWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
                             public void resCallback(ArResouceResponseBean responseBean) {
-                                ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
+//                                ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
                             }
                         });
                         //点击确定按钮处理
