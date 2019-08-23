@@ -91,7 +91,7 @@ public class ResourceMgrTool {
         }
     };
 
-    private static void callService(String chapterId, String resourceId, int operateMode, HashMap map, ResCallbackListener callback) {
+    private static void callService(int operateMode, HashMap map, ResCallbackListener callback) {
         Message msgFromClient = Message.obtain(null, operateMode);
         ArResouceParamBean bean = new ArResouceParamBean();
 //        bean.setMethodName(methodName);
@@ -113,35 +113,39 @@ public class ResourceMgrTool {
         }
     }
 
-//    public static void getResourcePath(String chapterId, String resourceId, ResCallbackListener resCallbackListener) {
+//    public static void getResourcePath(String chapterId,String sectionId, String resourceId, ResCallbackListener resCallbackListener) {
 //        HashMap<String, String> map = new HashMap<>();
 //        map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+//        map.put(ResourceParamKeys.SECTIONID, sectionId);
 //        map.put(ResourceParamKeys.RESOUCEID, resourceId);
-//        callService(chapterId, resourceId, MSG_GET_RESOUCE_PATH, MethodName_Ar.MSG_GET_RESOUCE_PATH, map, resCallbackListener);
+//        callService(MSG_GET_RESOUCE_PATH, MethodName_Ar.MSG_GET_RESOUCE_PATH, map, resCallbackListener);
 //    }
 
-    public static void downLoadResource(String chapterId, String resourceId, ResCallbackListener resCallbackListener) {
+    public static void downLoadResource(String chapterId,String sectionId, String resourceId, ResCallbackListener resCallbackListener) {
         HashMap<String, String> map = new HashMap<>();
         map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+        map.put(ResourceParamKeys.SECTIONID, sectionId);
         map.put(ResourceParamKeys.RESOUCEID, resourceId);
-        callService(chapterId, resourceId, MSG_DOWNLOAD_RESOUCE, map, resCallbackListener);
+        callService(MSG_DOWNLOAD_RESOUCE, map, resCallbackListener);
     }
 
-    public static void getResourceStatus(String chapterId, String resourceId, ResCallbackListener resCallbackListener) {
+    public static void getResourceStatus(String chapterId,String sectionId, String resourceId, ResCallbackListener resCallbackListener) {
         HashMap<String, String> map = new HashMap<>();
         map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+        map.put(ResourceParamKeys.SECTIONID, sectionId);
         map.put(ResourceParamKeys.RESOUCEID, resourceId);
-        callService(chapterId, resourceId, MSG_GET_RESOUCE_STATUS, map, resCallbackListener);
+        callService(MSG_GET_RESOUCE_STATUS, map, resCallbackListener);
     }
 
-    public static void playResource(final String chapterId, final String resourceId, final ResCallbackListener resCallbackListener) {
+    public static void playResource(final String chapterId,String sectionId, final String resourceId, final ResCallbackListener resCallbackListener) {
         final HashMap<String, String> map = new HashMap<>();
         map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+        map.put(ResourceParamKeys.SECTIONID, sectionId);
         map.put(ResourceParamKeys.RESOUCEID, resourceId);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                callService(chapterId, resourceId, MSG_PLAY_RESOUCE, map, resCallbackListener);
+                callService(MSG_PLAY_RESOUCE, map, resCallbackListener);
             }
         }).start();
 
@@ -153,11 +157,12 @@ public class ResourceMgrTool {
      * @param resourceId
      * @param resCallbackListener
      */
-    public static void gotoResourceListWindow(String chapterId, String resourceId, ResCallbackListener resCallbackListener) {
+    public static void gotoResourceListWindow(String chapterId,String sectionId, String resourceId, ResCallbackListener resCallbackListener) {
         HashMap<String, String> map = new HashMap<>();
         map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+        map.put(ResourceParamKeys.SECTIONID, sectionId);
         map.put(ResourceParamKeys.RESOUCEID, resourceId);
-        callService(chapterId, resourceId, MSG_OPEN_RESOUCE_LIST_WINDOW, map, resCallbackListener);
+        callService(MSG_OPEN_RESOUCE_LIST_WINDOW, map, resCallbackListener);
     }
 
 
@@ -167,11 +172,12 @@ public class ResourceMgrTool {
      * @param resourceId
      * @param resCallbackListener
      */
-    public static void gotoResourceDownloadWindow(String chapterId, String resourceId, ResCallbackListener resCallbackListener) {
+    public static void gotoResourceDownloadWindow(String chapterId,String sectionId, String resourceId, ResCallbackListener resCallbackListener) {
         HashMap<String, String> map = new HashMap<>();
         map.put(ResourceParamKeys.CHADAPTERID, chapterId);
+        map.put(ResourceParamKeys.SECTIONID, sectionId);
         map.put(ResourceParamKeys.RESOUCEID, resourceId);
-        callService(chapterId, resourceId, MSG_OPEN_RESOUCE_DOWNLOAD_WINDOW, map, resCallbackListener);
+        callService(MSG_OPEN_RESOUCE_DOWNLOAD_WINDOW, map, resCallbackListener);
     }
 
     //endregion

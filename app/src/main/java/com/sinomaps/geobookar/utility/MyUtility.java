@@ -48,7 +48,7 @@ public class MyUtility {
     }
 
     public static String getProjectConfigFilePath(Context context) {
-        return getProjectBathPath(context) + "Basic/category.xml";
+        return getProjectBathPath(context) + "category.xml";
     }
 
     public static boolean checkResourceIsExist(Activity activity, String uri) {
@@ -208,11 +208,15 @@ public class MyUtility {
             XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
             xmlParser.setInput(new FileInputStream(categoryConfigFilePath), "UTF-8");
             int eventType = xmlParser.getEventType();
-            String chapterId = null;
+            String sectionId = null;
+            String chapterId=null;
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType != XmlPullParser.START_TAG || !xmlParser.getName().equals("object") || !xmlParser.getAttributeValue(null, "id").toLowerCase().equals(id.toLowerCase())) {
                     if (xmlParser.getName() != null && xmlParser.getName().equals("chapter")) {
                         chapterId = xmlParser.getAttributeValue(null, "id");
+                    }
+                    if (xmlParser.getName() != null && xmlParser.getName().equals("section")) {
+                        sectionId = xmlParser.getAttributeValue(null, "id");
                     }
                     eventType = xmlParser.next();
                 } else {
@@ -222,6 +226,7 @@ public class MyUtility {
                     object.ResID = xmlParser.getAttributeValue(null, "resid");
                     object.Type = xmlParser.getAttributeValue(null, "type");
                     object.ChapterID = chapterId;
+                    object.SectionID = sectionId;
                     if (object.Type.equals("model")) {
                         ModelInfo model = new ModelInfo();
                         model.Name = object.Name;

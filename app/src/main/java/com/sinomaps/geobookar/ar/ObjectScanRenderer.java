@@ -476,7 +476,7 @@ public class ObjectScanRenderer implements Renderer {
                         final ObjectInfo object = MyUtility.getObjectFromXML(this.mActivity, (String) this.listTargetNames.get(i));
                         if (object != null) {
                             ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = true;
-                            ResourceMgrTool.getResourceStatus(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                            ResourceMgrTool.getResourceStatus(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                                 @Override
                                 public void resCallback(ArResouceResponseBean responseBean) {
                                     if (responseBean.getResourceStatus().equals(ResourceStatus.RESOUCE_DOWNLOADED)) {
@@ -485,7 +485,7 @@ public class ObjectScanRenderer implements Renderer {
                                         } else {
                                             Toast.makeText(ObjectScanRenderer.this.mActivity, "调用播放器", Toast.LENGTH_SHORT);
                                             //region 调用播放资源接口
-                                            ResourceMgrTool.playResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                                            ResourceMgrTool.playResource(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                                                 @Override
                                                 public void resCallback(ArResouceResponseBean responseBean) {
                                                     if (responseBean.getResourceStatus().equals(ResourceStatus.RESOUCE_PAID)) {
@@ -500,9 +500,9 @@ public class ObjectScanRenderer implements Renderer {
                                     } else {
                                         ShowDialogWithStatus(ObjectScanRenderer.this.mActivity, responseBean, object);
                                     }
+                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = false;
                                 }
                             });
-//                            ObjectScanRenderer.this.mActivity.bIsGotoDetailPage = false;
                         }
                     }
                     i++;
@@ -546,19 +546,19 @@ public class ObjectScanRenderer implements Renderer {
                 ok = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ResourceMgrTool.downLoadResource(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                        ResourceMgrTool.downLoadResource(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
                             public void resCallback(ArResouceResponseBean responseBean) {
                                 ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
                             }
                         });
 
-                        ResourceMgrTool.gotoResourceDownloadWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
-                            @Override
-                            public void resCallback(ArResouceResponseBean responseBean) {
-                                ShowDialog(context, "请求跳转到资源下载窗口的响应", responseBean.getResourceStatus().toString());
-                            }
-                        });
+//                        ResourceMgrTool.gotoResourceDownloadWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+//                            @Override
+//                            public void resCallback(ArResouceResponseBean responseBean) {
+//                                ShowDialog(context, "请求跳转到资源下载窗口的响应", responseBean.getResourceStatus().toString());
+//                            }
+//                        });
                         //点击确定按钮处理
                         dialog.cancel();
                     }
@@ -579,7 +579,7 @@ public class ObjectScanRenderer implements Renderer {
                 ok = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ResourceMgrTool.gotoResourceListWindow(object.ChapterID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+                        ResourceMgrTool.gotoResourceListWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
                             @Override
                             public void resCallback(ArResouceResponseBean responseBean) {
                                 ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());

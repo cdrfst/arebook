@@ -8,6 +8,7 @@ public class ObjectInfo implements Serializable {
 
     /* renamed from: ID */
     public String ResID;
+    public String SectionID;
     public String ChapterID;
     public String ID;
     public String Name;

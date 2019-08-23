@@ -223,12 +223,10 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         super.onCreate(savedInstanceState);
         String bookId = getIntent().getStringExtra("CurBookID");
         Log.d(TAG, "收到的书籍ID:" + bookId);
-        if (bookId == null) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("CurBookID", "0a2a9b0aaf7449f4a9a9852542eea52c");//外部传入当前书的文件夹名称
-            editor.commit();
-        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("CurBookID", bookId);//外部传入当前书的文件夹名称
+        editor.commit();
         this.pointer1 = new PointF();
         this.pointer2 = new PointF();
         this.mid = new PointF();
@@ -288,7 +286,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     public void loadARModels() {
         try {
             String projectBaseFolder = MyUtility.getProjectBathPath(this);
-            String configFile = projectBaseFolder + "Basic/ARModels.xml";
+            String configFile = projectBaseFolder + "ARModels.xml";
             File file = new File(configFile);
             if (!file.exists()) {
                 Log.v("longyuntao", "ARModels文件未找到！");
@@ -300,7 +298,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
             for (int eventType = xmlParser.getEventType(); eventType != 1; eventType = xmlParser.next()) {
                 if (eventType == 2 && xmlParser.getName().equals("model")) {
                     String resid = xmlParser.getAttributeValue(null, "resid");
-                    String name = xmlParser.getAttributeValue(null, "name");
+                    String id = xmlParser.getAttributeValue(null, "id");
                     String src = xmlParser.getAttributeValue(null, "src");
                     String strXAngle = xmlParser.getAttributeValue(null, "xAngle");
                     String strYAngle = xmlParser.getAttributeValue(null, "yAngle");
@@ -324,7 +322,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
                     if (strIsEnableXRotate != null && strIsEnableXRotate.equals("0")) {
                         my3DObject.setXRotateEnable(false);
                     }
-                    this.mARModels.put(name.toLowerCase(), my3DObject);
+                    this.mARModels.put(id.toLowerCase(), my3DObject);
                 }
             }
         } catch (Exception ex) {
@@ -468,7 +466,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         if (this.mCurrentDataset == null) {
             this.mCurrentDataset = imageTracker.createDataSet();
         }
-        if (this.mCurrentDataset == null || !this.mCurrentDataset.load(MyUtility.getProjectBathPath(this) + "Basic/QCARConfig.xml", 2) || !imageTracker.activateDataSet(this.mCurrentDataset)) {
+        if (this.mCurrentDataset == null || !this.mCurrentDataset.load(MyUtility.getProjectBathPath(this) + "QCARConfig.xml", 2) || !imageTracker.activateDataSet(this.mCurrentDataset)) {
             return false;
         }
         int numTrackables = this.mCurrentDataset.getNumTrackables();
@@ -610,8 +608,8 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         ObjectInfo object = MyUtility.getObjectFromXML(this, name);
         objectOverlayView.setThumbImg(null);
         if (object != null) {
-            objectOverlayView.setTitle(object.Name);
-            String thumbPath = MyUtility.getProjectBathPath(this) + "basic/thumb/" + object.ID + ".jpg";
+            objectOverlayView.setTitle(object.Name+"("+object.ID+")");
+            String thumbPath = MyUtility.getProjectBathPath(this) + "thumb/" + object.ID + ".jpg";
             if (new File(thumbPath).exists()) {
                 objectOverlayView.setThumbImg(BitmapFactory.decodeFile(thumbPath));
             }

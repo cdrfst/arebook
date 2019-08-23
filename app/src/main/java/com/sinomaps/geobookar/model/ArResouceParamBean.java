@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class ArResouceParamBean{
 
     public static final String CHADPTER_ID = "chadpter_id";
+    public static final String SECTION_ID = "section_id";
     public static final String RESOURCE_ID = "resource_id";
     public static final String RESOURCE_DIRCTORY = "resource_dirctory";
     public static final String OPEN_RESOUCE_STATUS = "open_resouce_status";
