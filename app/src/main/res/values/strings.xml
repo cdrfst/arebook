@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AR扫一扫</string>
     <string name="path_data_base">/Download/</string>
-    <string name="yt_string_dialog_exit_msg">确认要退出吗?</string>
+    <string name="yt_string_dialog_exit_msg">确认要退出Ar扫描吗?</string>
     <string name="yt_string_dialog_exit_title">提示</string>
     <string name="yt_string_dialog_exit_Yes">确认</string>
     <string name="yt_string_dialog_exit_No">取消</string>
