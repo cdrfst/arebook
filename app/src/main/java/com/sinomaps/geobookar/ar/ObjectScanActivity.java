@@ -127,6 +127,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     SampleApplicationSession vuforiaAppSession;
     private float xOld = 0.0f;
     private float yOld = 0.0f;
+    private String[] imgTypes={".jpg",".png",".bmp",".jpeg"};//支持的缩略图后缀
 
     /* renamed from: com.sinomaps.geobookar.ar.ObjectScanActivity$MyGestureListener */
     private class MyGestureListener extends SimpleOnGestureListener {
@@ -599,6 +600,16 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         }
     }
 
+
+    private String getThumbImage(String resId){
+        String basePath=MyUtility.getProjectBathPath(this).concat("thumb/").concat(resId);
+        for (int i=0;i<imgTypes.length;i++) {
+            if(new File(basePath.concat(imgTypes[i])).exists()){
+                return basePath.concat(imgTypes[i]);
+            }
+        }
+        return null;
+    }
     private Texture createPopupTexture(String name) {
         if (this.mPopupTexture != null) {
             this.mPopupTexture = null;
@@ -608,9 +619,9 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
         ObjectInfo object = MyUtility.getObjectFromXML(this, name);
         objectOverlayView.setThumbImg(null);
         if (object != null) {
-            objectOverlayView.setTitle(object.Name+"("+object.ID+")");
-            String thumbPath = MyUtility.getProjectBathPath(this) + "thumb/" + object.ID + ".jpg";
-            if (new File(thumbPath).exists()) {
+            objectOverlayView.setTitle((object.Name==null?"":object.Name)+"("+object.ID+")");
+            String thumbPath = getThumbImage(object.ID);
+            if (thumbPath!=null) {
                 objectOverlayView.setThumbImg(BitmapFactory.decodeFile(thumbPath));
             }
         } else {
