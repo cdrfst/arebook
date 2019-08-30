@@ -42,7 +42,7 @@ public class ResModelActivity extends BaseActivity {
         setContentView((int) R.layout.activity_model);
         this.mObject = (ObjectInfo) getIntent().getSerializableExtra("Object");
         if (this.mObject != null && this.mObject.models.size() != 0) {
-            String firstModelUri = MyUtility.getProjectBathPath(this) + ((ModelInfo) this.mObject.models.get(0)).Src;
+            String firstModelUri = MyUtility.getDataBathPath(this) + ((ModelInfo) this.mObject.models.get(0)).Src;
             if (firstModelUri.endsWith("\\")) {
                 firstModelUri = firstModelUri + ((ModelInfo) this.mObject.models.get(0)).Name;
             }
@@ -116,7 +116,7 @@ public class ResModelActivity extends BaseActivity {
             public void run() {
                 try {
                     ModelInfo curModel = (ModelInfo) ResModelActivity.this.mObject.models.get(position);
-                    String modelPath = MyUtility.getProjectBathPath(ResModelActivity.this) + curModel.Src;
+                    String modelPath = MyUtility.getDataBathPath(ResModelActivity.this) + curModel.Src;
                     if (curModel.Src.endsWith("\\")) {
                         modelPath = modelPath + curModel.Name;
                     }
