@@ -35,8 +35,7 @@ import java.util.List;
 
 public class MyUtility {
     public static String getDataBathPath(Context context) {
-//        return context.getExternalFilesDir(null) + context.getResources().getString(R.string.path_data_base);
-        return  Environment.getExternalStorageDirectory() + context.getResources().getString(R.string.path_data_base);
+        return  Environment.getExternalStorageDirectory().toString().concat(context.getResources().getString(R.string.path_data_base));
     }
 
     public static String getCurBookID(Context context) {
@@ -44,11 +43,11 @@ public class MyUtility {
     }
 
     public static String getProjectBathPath(Context context) {
-        return getDataBathPath(context) + getCurBookID(context) + InternalZipConstants.ZIP_FILE_SEPARATOR;
+        return getDataBathPath(context).concat(getCurBookID(context)).concat("/metadata").concat("/");
     }
 
     public static String getProjectConfigFilePath(Context context) {
-        return getProjectBathPath(context) + "category.xml";
+        return getProjectBathPath(context).concat("category.xml");
     }
 
     public static boolean checkResourceIsExist(Activity activity, String uri) {
@@ -56,7 +55,6 @@ public class MyUtility {
             return true;
         }
         Toast.makeText(activity.getApplicationContext(), "资源不存在，请下载离线数据包！", Toast.LENGTH_SHORT).show();
-//        activity.startActivity(new Intent(activity, OfflineDataActivity.class));
         return false;
     }
 
