@@ -24,7 +24,8 @@
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
 <!--        </activity>-->
-<!--        <activity android:name=".ui.ResModelActivity" />-->
+<!--        <activity android:name=".ui.ResModelActivity" android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize" />-->
 <!--        <activity android:name=".ui.MultiObjectActivity" />-->
+<!--&lt;!&ndash;        <activity android:name="" />&ndash;&gt;-->
 <!--    </application>-->
 </manifest>

@@ -43,7 +43,11 @@ public class MyUtility {
     }
 
     public static String getProjectBathPath(Context context) {
-        return getDataBathPath(context).concat(getCurBookID(context)).concat("/metadata").concat("/");
+        String newPath= getDataBathPath(context).concat(getCurBookID(context)).concat("/metadata").concat("/");
+        if(new File(newPath).exists()){
+            return newPath;
+        }
+        return getDataBathPath(context).concat(getCurBookID(context)).concat("/");
     }
 
     public static String getProjectConfigFilePath(Context context) {
@@ -366,86 +370,89 @@ public class MyUtility {
         context.startActivity(intent);
     }
 
-//    public static int getResourceTypeIconId(String type) {
-//        if (type.equals("images")) {
-//            return R.drawable.ic_res_type_images;
-//        }
-//        if (type.equals("mp3")) {
-//            return R.drawable.ic_res_type_mp3;
-//        }
-//        if (type.equals("mp4")) {
-//            return R.drawable.ic_res_type_mp4;
-//        }
-//        if (type.equals("swf")) {
-//            return R.drawable.ic_res_type_swf;
-//        }
-//        if (type.equals("html")) {
-//            return R.drawable.ic_res_type_zct;
-//        }
-//        if (type.equals("models") || type.equals("model")) {
-//            return R.drawable.ic_res_type_models;
-//        }
-//        if (type.equals("objs")) {
-//            return R.drawable.ic_res_type_objs;
-//        }
-//        return R.drawable.ic_res_type_other;
-//    }
+    //region
 
-//    public static String getPhotoURLs(Context context) {
-//        String saveDir = context.getExternalFilesDir(null) + context.getResources().getString(R.string.path_photo_save);
-//        File dir = new File(saveDir);
-//        String fullPaths = "";
-//        if (!dir.exists() || !dir.isDirectory()) {
-//            return fullPaths;
-//        }
-//        String[] files = dir.list();
-//        for (int i = files.length - 1; i >= 0; i--) {
-//            fullPaths = fullPaths + "file://" + saveDir + InternalZipConstants.ZIP_FILE_SEPARATOR + files[i] + ",";
-//        }
-//        if (!fullPaths.equals("")) {
-//            return fullPaths.substring(0, fullPaths.length() - 1);
-//        }
-//        return fullPaths;
-//    }
-//
-//    public static String getPhotoReceiveURLs(Context context) {
-//        String saveDir = context.getExternalFilesDir(null) + context.getResources().getString(R.string.path_photo_receive);
-//        File dir = new File(saveDir);
-//        String fullPaths = "";
-//        if (!dir.exists() || !dir.isDirectory()) {
-//            return fullPaths;
-//        }
-//        String[] files = dir.list();
-//        for (int i = files.length - 1; i >= 0; i--) {
-//            fullPaths = fullPaths + "file://" + saveDir + files[i] + ",";
-//        }
-//        if (!fullPaths.equals("")) {
-//            return fullPaths.substring(0, fullPaths.length() - 1);
-//        }
-//        return fullPaths;
-//    }
-
-//    public static void gotoViewPhotosActivity(Context context) {
-//        Intent intent = new Intent();
-//        intent.putExtra("image_urls", getPhotoURLs(context));
-//        intent.putExtra("position", 0);
-//        intent.setClass(context, ShowPhotoListActivity.class);
-//        context.startActivity(intent);
-//    }
-
-//    public static void gotoViewPhotosReceiveActivity(Context context) {
-//        Intent intent = new Intent();
-//        intent.putExtra("image_urls", getPhotoReceiveURLs(context));
-//        intent.putExtra("position", 0);
-//        intent.putExtra("isViewReceivePhotos", true);
-//        intent.setClass(context, ShowPhotoListActivity.class);
-//        context.startActivity(intent);
-//    }
-
-//    public static void gotoHelpActivity(Context context) {
-//        Intent intent = new Intent(context, MyWebViewActivity.class);
-//        intent.putExtra("Title", "使用说明");
-//        intent.putExtra("URL", "file:///android_asset/help/help.html");
-//        context.startActivity(intent);
-//    }
+    public static ObjectInfo getObjectFromXMLByResId(Context context, String resId) {
+        try {
+            String categoryConfigFilePath = getProjectConfigFilePath(context);
+            if (!new File(categoryConfigFilePath).exists()) {
+                Toast.makeText(context, "配置文件未找到", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+            XmlPullParser xmlParser = XmlPullParserFactory.newInstance().newPullParser();
+            xmlParser.setInput(new FileInputStream(categoryConfigFilePath), "UTF-8");
+            int eventType = xmlParser.getEventType();
+            String sectionId = null;
+            String chapterId=null;
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType != XmlPullParser.START_TAG || !xmlParser.getName().equals("object") || !xmlParser.getAttributeValue(null, "resid").toLowerCase().equals(resId.toLowerCase())) {
+                    if (xmlParser.getName() != null && xmlParser.getName().equals("chapter")) {
+                        chapterId = xmlParser.getAttributeValue(null, "id");
+                    }
+                    if (xmlParser.getName() != null && xmlParser.getName().equals("section")) {
+                        sectionId = xmlParser.getAttributeValue(null, "id");
+                    }
+                    eventType = xmlParser.next();
+                } else {
+                    ObjectInfo object = new ObjectInfo();
+                    object.ID = xmlParser.getAttributeValue(null, "id");
+                    object.Name = xmlParser.getAttributeValue(null, "name");
+                    object.ResID = xmlParser.getAttributeValue(null, "resid");
+                    object.Type = xmlParser.getAttributeValue(null, "type");
+                    object.ChapterID = chapterId;
+                    object.SectionID = sectionId;
+                    if (object.Type.equals("model")) {
+                        ModelInfo model = new ModelInfo();
+                        model.Name = object.Name;
+                        model.Src = object.Src + model.Name;
+                        String strXAngle = xmlParser.getAttributeValue(null, "xAngle");
+                        String strYAngle = xmlParser.getAttributeValue(null, "yAngle");
+                        String strIsEarth = xmlParser.getAttributeValue(null, "isEarth");
+                        if (strXAngle != null) {
+                            model.XAngle = Float.parseFloat(strXAngle);
+                        }
+                        if (strYAngle != null) {
+                            model.YAngle = Float.parseFloat(strYAngle);
+                        }
+                        if (strIsEarth != null) {
+                            model.IsEarth = strIsEarth.equals("1");
+                        }
+                        object.AddModel(model);
+                    }
+                    if (!object.Type.equals("models")) {
+                        return object;
+                    }
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_TAG) {
+                            if (xmlParser.getName().equals("model")) {
+                                ModelInfo model2 = new ModelInfo();
+                                model2.Name = xmlParser.getAttributeValue(null, "name");
+                                model2.Src = xmlParser.getAttributeValue(null, "src");
+                                String strXAngle2 = xmlParser.getAttributeValue(null, "xAngle");
+                                String strYAngle2 = xmlParser.getAttributeValue(null, "yAngle");
+                                String strIsEarth2 = xmlParser.getAttributeValue(null, "isEarth");
+                                if (strXAngle2 != null) {
+                                    model2.XAngle = Float.parseFloat(strXAngle2);
+                                }
+                                if (strYAngle2 != null) {
+                                    model2.YAngle = Float.parseFloat(strYAngle2);
+                                }
+                                if (strIsEarth2 != null) {
+                                    model2.IsEarth = strIsEarth2.equals("1");
+                                }
+                                object.AddModel(model2);
+                            }
+                        } else if (eventType == 3 && xmlParser.getName().equals("object")) {
+                            return object;
+                        }
+                        eventType = xmlParser.next();
+                    }
+                    return object;
+                }
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+    //endregion
 }

@@ -223,6 +223,9 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String bookId = getIntent().getStringExtra("CurBookID");
+        if(bookId==null||bookId.isEmpty()){
+            bookId="arebook";
+        }
         Log.d(TAG, "收到的书籍ID:" + bookId);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();

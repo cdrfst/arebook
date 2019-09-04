@@ -1,10 +1,13 @@
 package com.sinomaps.geobookar.ui;
 
+import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +26,7 @@ import com.sinomaps.geobookar.opengl.My3DObject;
 import com.sinomaps.geobookar.utility.MyUtility;
 
 /* renamed from: com.sinomaps.geobookar.ui.ResModelActivity */
-public class ResModelActivity extends BaseActivity {
+public class ResModelActivity extends Activity {
     public final LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(this);
     public My3DObject m3DModel = null;
     /* access modifiers changed from: private */
@@ -41,6 +44,9 @@ public class ResModelActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView((int) R.layout.activity_model);
         this.mObject = (ObjectInfo) getIntent().getSerializableExtra("Object");
+
+        setmObjectByResId();
+
         if (this.mObject != null && this.mObject.models.size() != 0) {
             String firstModelUri = MyUtility.getDataBathPath(this) + ((ModelInfo) this.mObject.models.get(0)).Src;
             if (firstModelUri.endsWith("\\")) {
@@ -58,6 +64,15 @@ public class ResModelActivity extends BaseActivity {
             displayModel(0);
         }
     }
+
+    //region 根据外部传入的资源ID播放对应模型
+    private void setmObjectByResId(){
+        String resId= getIntent().getStringExtra("resId");
+        if(resId!=null&&resId.length()==32){
+            this.mObject = MyUtility.getObjectFromXMLByResId(this,resId);
+        }
+    }
+    //endregion
 
     private void initRadioGroups() {
         for (int i = 0; i < this.mObject.models.size(); i++) {
@@ -78,11 +93,14 @@ public class ResModelActivity extends BaseActivity {
 //            rb.setTextSize(2, getResources().getDimension(R.dimen.res_model_tab_text_size));
 //            rb.setTextColor(getResources().getColorStateList(R.color.segment_color));
             rb.setEllipsize(TruncateAt.MARQUEE);
-            rb.setGravity(17);
+            rb.setGravity(Gravity.CENTER);
             rb.setPadding(30, 10, 30, 10);
             rb.setLayoutParams(new LayoutParams(100, -2));
             rb.setButtonDrawable(new ColorDrawable(0));
             rb.setSingleLine(true);
+            rb.setTextColor(getResources().getColorStateList(R.color.model_selector_radiobutton));
+            rb.setScaleX(1.5f);
+            rb.setScaleY(1.5f);
             this.mRadioGroupModels.addView(rb);
         }
         this.mRadioGroupModels.check(this.mRadioGroupModels.getChildAt(0).getId());
