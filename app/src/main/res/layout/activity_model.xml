@@ -4,18 +4,19 @@
 
     <HorizontalScrollView
         android:id="@+id/hsv_segment"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|bottom|left|right|center_vertical|fill_vertical|center_horizontal|fill_horizontal|center|fill|start|end"
+        android:layout_gravity="center_horizontal"
         android:visibility="visible">
 
-        <RadioGroup
-            android:id="@+id/rg_models"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/semi_transparent_black"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:padding="20dp" />
+            <RadioGroup
+                android:id="@+id/rg_models"
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:background="@color/semi_transparent_black"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:padding="5dp" />
+
     </HorizontalScrollView>
 </FrameLayout>

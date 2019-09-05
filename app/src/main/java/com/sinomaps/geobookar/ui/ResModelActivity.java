@@ -92,15 +92,14 @@ public class ResModelActivity extends Activity {
             }
 //            rb.setTextSize(2, getResources().getDimension(R.dimen.res_model_tab_text_size));
 //            rb.setTextColor(getResources().getColorStateList(R.color.segment_color));
-            rb.setEllipsize(TruncateAt.MARQUEE);
-            rb.setGravity(Gravity.CENTER);
+//            rb.setEllipsize(TruncateAt.MARQUEE);
+//            rb.setGravity(Gravity.CENTER);
             rb.setPadding(30, 10, 30, 10);
-            rb.setLayoutParams(new LayoutParams(100, -2));
+//            rb.setLayoutParams(new LayoutParams(100, -2));
             rb.setButtonDrawable(new ColorDrawable(0));
             rb.setSingleLine(true);
             rb.setTextColor(getResources().getColorStateList(R.color.model_selector_radiobutton));
-            rb.setScaleX(1.5f);
-            rb.setScaleY(1.5f);
+            rb.setTextSize(20);
             this.mRadioGroupModels.addView(rb);
         }
         this.mRadioGroupModels.check(this.mRadioGroupModels.getChildAt(0).getId());

@@ -59,7 +59,7 @@ public class MyGLRenderer implements Renderer {
             float[] mModelMatrix = modelMatrixQ.getMatrix();
             float boundingRadius = this.mMyObject.getBoundingRadius();
             Matrix.scaleM(mModelMatrix, 0, 1.0f / boundingRadius, 1.0f / boundingRadius, 1.0f / boundingRadius);
-            Matrix.scaleM(mModelMatrix, 0, this.mScale, this.mScale, this.mScale);
+            Matrix.scaleM(mModelMatrix, 0, this.mMyObject.getScale(), this.mMyObject.getScale(), this.mMyObject.getScale());
             Matrix.translateM(mModelMatrix, 0, -this.mMyObject.getCenterPoint()[0], -this.mMyObject.getCenterPoint()[1], -this.mMyObject.getCenterPoint()[2]);
             if (this.mMyObject.isbIsEarth()) {
                 Matrix.translateM(mModelMatrix, 0, this.xDelta * 0.17904931f, (-this.yDelta) * 0.17904931f, 0.0f);
