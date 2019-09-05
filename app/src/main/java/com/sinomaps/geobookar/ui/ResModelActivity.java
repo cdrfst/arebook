@@ -42,6 +42,7 @@ public class ResModelActivity extends Activity {
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyUtility.setBookId(this);
         setContentView((int) R.layout.activity_model);
         this.mObject = (ObjectInfo) getIntent().getSerializableExtra("Object");
 

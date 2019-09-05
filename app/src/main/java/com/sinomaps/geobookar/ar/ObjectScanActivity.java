@@ -222,15 +222,7 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     /* access modifiers changed from: protected */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String bookId = getIntent().getStringExtra("CurBookID");
-        if(bookId==null||bookId.isEmpty()){
-            bookId="arebook";
-        }
-        Log.d(TAG, "收到的书籍ID:" + bookId);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("CurBookID", bookId);//外部传入当前书的文件夹名称
-        editor.commit();
+        MyUtility.setBookId(this);
         this.pointer1 = new PointF();
         this.pointer2 = new PointF();
         this.mid = new PointF();

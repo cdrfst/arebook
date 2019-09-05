@@ -3,10 +3,12 @@ package com.sinomaps.geobookar.utility;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -455,4 +457,16 @@ public class MyUtility {
         return null;
     }
     //endregion
+
+    public static void setBookId(Activity activity){
+        String bookId = activity.getIntent().getStringExtra("CurBookID");
+        if(bookId==null||bookId.isEmpty()){
+            bookId="arebook";
+        }
+        Log.d("MyUtility", "收到的书籍ID:" + bookId);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("CurBookID", bookId);//外部传入当前书的文件夹名称
+        editor.commit();
+    }
 }
