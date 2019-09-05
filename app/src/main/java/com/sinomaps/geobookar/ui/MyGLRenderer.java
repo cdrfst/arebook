@@ -37,6 +37,7 @@ public class MyGLRenderer implements Renderer {
         if (this.mMyObject != null) {
             this.mMyObject.initShader(this.mActivity, "shaders/vertex.sh", "shaders/frag.sh");
             this.mMyObject.bindTextures();
+            this.mScale=this.mMyObject.getScale()>=1?this.mMyObject.getScale():1.0f;
         }
     }
 
@@ -59,7 +60,7 @@ public class MyGLRenderer implements Renderer {
             float[] mModelMatrix = modelMatrixQ.getMatrix();
             float boundingRadius = this.mMyObject.getBoundingRadius();
             Matrix.scaleM(mModelMatrix, 0, 1.0f / boundingRadius, 1.0f / boundingRadius, 1.0f / boundingRadius);
-            Matrix.scaleM(mModelMatrix, 0, this.mMyObject.getScale(), this.mMyObject.getScale(), this.mMyObject.getScale());
+            Matrix.scaleM(mModelMatrix, 0, this.mScale, this.mScale, this.mScale);
             Matrix.translateM(mModelMatrix, 0, -this.mMyObject.getCenterPoint()[0], -this.mMyObject.getCenterPoint()[1], -this.mMyObject.getCenterPoint()[2]);
             if (this.mMyObject.isbIsEarth()) {
                 Matrix.translateM(mModelMatrix, 0, this.xDelta * 0.17904931f, (-this.yDelta) * 0.17904931f, 0.0f);

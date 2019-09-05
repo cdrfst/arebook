@@ -140,6 +140,7 @@ public class ResModelActivity extends Activity {
                     ResModelActivity.this.m3DModel.loadDatFile(ResModelActivity.this, modelPath);
                     ResModelActivity.this.m3DModel.setXAngle(curModel.XAngle);
                     ResModelActivity.this.m3DModel.setYAngle(curModel.YAngle);
+                    ResModelActivity.this.m3DModel.setScale(1.5f);
                     ResModelActivity.this.m3DModel.setbIsEarth(curModel.IsEarth);
                     ResModelActivity.this.runOnUiThread(new Runnable() {
                         public void run() {

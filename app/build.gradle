@@ -1,9 +1,9 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.sinomaps.arebook"
+//        applicationId "com.sinomaps.arebook"
         minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
