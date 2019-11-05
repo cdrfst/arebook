@@ -461,7 +461,7 @@ public class MyUtility {
     public static void setBookId(Activity activity){
         String bookId = activity.getIntent().getStringExtra("CurBookID");
         if(bookId==null||bookId.isEmpty()){
-            bookId="arebook";
+            bookId="b526b634e63446d48a4b1a2f9c0f92dd";
         }
         Log.d("MyUtility", "收到的书籍ID:" + bookId);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);

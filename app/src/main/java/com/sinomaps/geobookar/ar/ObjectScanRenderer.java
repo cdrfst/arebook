@@ -532,7 +532,7 @@ public class ObjectScanRenderer implements Renderer {
                 msg = "资源下载中请稍后";
                 break;
             case RESOURCE_NOT_DOWNLOAD:
-                msg = "请先下载资源";
+                msg = "请先下载资源后重试";
                 okBtnTxt = R.string.ar_string_dialog_download_Yes;
                 cancelBtnTxt = R.string.ar_string_dialog_download_No;
                 cancel = new DialogInterface.OnClickListener() {
@@ -546,12 +546,12 @@ public class ObjectScanRenderer implements Renderer {
                 ok = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ResourceMgrTool.downLoadResource(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
-                            @Override
-                            public void resCallback(ArResouceResponseBean responseBean) {
-//                                ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
-                            }
-                        });
+//                        ResourceMgrTool.downLoadResource(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+//                            @Override
+//                            public void resCallback(ArResouceResponseBean responseBean) {
+////                                ShowDialog(context, "请求下载资源的响应", responseBean.getResourceStatus().toString());
+//                            }
+//                        });
 
 //                        ResourceMgrTool.gotoResourceDownloadWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
 //                            @Override
@@ -565,7 +565,7 @@ public class ObjectScanRenderer implements Renderer {
                 };
                 break;
             case RESOUCE_NOT_PAY:
-                msg = "此资源需要付费";
+                msg = "请先付费后重试";
                 okBtnTxt = R.string.ar_string_dialog_pay_Yes;
                 cancelBtnTxt = R.string.ar_string_dialog_pay_No;
                 cancel = new DialogInterface.OnClickListener() {
@@ -579,12 +579,12 @@ public class ObjectScanRenderer implements Renderer {
                 ok = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ResourceMgrTool.gotoResourceListWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
-                            @Override
-                            public void resCallback(ArResouceResponseBean responseBean) {
-//                                ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
-                            }
-                        });
+//                        ResourceMgrTool.gotoResourceListWindow(object.ChapterID,object.SectionID, object.ResID, new ResourceMgrTool.ResCallbackListener() {
+//                            @Override
+//                            public void resCallback(ArResouceResponseBean responseBean) {
+////                                ShowDialog(context, "请求跳转到资源列表的响应", responseBean.getResourceStatus().toString());
+//                            }
+//                        });
                         //点击确定按钮处理
                         dialog.cancel();
                     }
@@ -596,7 +596,7 @@ public class ObjectScanRenderer implements Renderer {
         builder.setMessage(msg);
         if (ok != null && cancel != null) {
             builder.setCancelable(true);
-            builder.setNegativeButton(cancelBtnTxt, cancel);
+//            builder.setNegativeButton(cancelBtnTxt, cancel);
             builder.setPositiveButton(okBtnTxt, ok);
         }
         builder.show();

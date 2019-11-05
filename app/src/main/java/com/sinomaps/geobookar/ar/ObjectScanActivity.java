@@ -437,6 +437,8 @@ public class ObjectScanActivity extends BaseActivity implements SampleApplicatio
     /* access modifiers changed from: protected */
     public void onDestroy() {
         super.onDestroy();
+        mARModels.clear();
+        mARModels=null;
         try {
             this.vuforiaAppSession.stopAR();
         } catch (SampleApplicationException e) {
